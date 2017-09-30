@@ -29,11 +29,20 @@ public class FormRepositoryDefault implements FormRepository{
 		jdbcTemplate.update("INSERT INTO Form(quote, votes) VALUES (?, ?)", quote, votes);
 	}
 
-
 	@Override
 	public List<FormDTO> obtainData() {
 		List<FormDTO> data = jdbcTemplate.query("SELECT quote, votes FROM form", FORM_MAPPER);
 		return data;
 	}
 
+	@Override
+	public Integer obtainVotes(String quote) {
+		Integer votes = jdbcTemplate.queryForObject("SELECT votes FROM form WHERE quote = ?", new Object[] { quote }, Integer.class);
+		return votes;
+	}
+	
+	@Override
+	public void updateForm(String quote, int votes) {
+		jdbcTemplate.update("UPDATE Form SET votes = ? WHERE quote = ?", votes, quote);	
+	}
 }

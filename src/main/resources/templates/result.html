@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Wyniki</title>
+</head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<body>
+<h1>Wyniki głosowania</h1>
+<table style="width:15%">
+<tr>
+<th>Cytat</th>
+<th>Głosy</th> 
+</tr>
+<tr th:each="instance : ${data}">
+     <td th:text="${instance.quote}"></td>
+     <td th:text="${instance.votes}"></td>
+</tr>
+</table>	
+</body>
+</html>

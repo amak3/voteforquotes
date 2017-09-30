@@ -48,19 +48,35 @@ public class RestApiController {
 	
     @RequestMapping(value="/importFromTextField", method = RequestMethod.POST)
     public String importFromTextField(Model model,
-    							@RequestParam(value="quote", required=true) String choice) throws IOException{
-    	if (!(choice.length()==0))
-		{
-    		form.createForm(choice, 0);
+    							@RequestParam(value="quote", required=true) String quote) throws IOException{
+    	if (!(quote.length()==0)){
+    		form.createForm(quote, 0);
 		}
     	    	
     	return "redirect:/form";
     }
 	
 	@RequestMapping(path = "/form", method = RequestMethod.GET)
-	public String displayForm(Model model)
-	{
+	public String displayForm(Model model){
 		model.addAttribute("data", form.obtainData());
 		return "form";
 	}
+	
+	@RequestMapping(path = "/countVotes", method = RequestMethod.POST)
+	public String countVotes(Model model,
+								@RequestParam(value="quote", required=true) String choice) {
+		
+		int counter = form.obtainVotes(choice);
+		counter += 1;
+		form.updateForm(choice, counter);
+		
+		return "redirect:/result";
+	}
+	
+	@RequestMapping(path = "/result", method = RequestMethod.GET)
+	public String displayResult(Model model) {
+		model.addAttribute("data", form.obtainData());
+		return "result";
+	}
+	
 }
