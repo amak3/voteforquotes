@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Dodaj cytat</title>
+</head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<body>
+<h1>Dodaj cytat</h1>
+<form action="/importFromFile" method="post" enctype="multipart/form-data">
+	<h3>Import cytatów z pliku .txt</h3>
+    Wybierz plik z cytatmi:<br></br>
+    <input type="file" name="file" id="fileToUpload" visbility="hidden"></input>
+    <input type="submit" value="Import" name="submit"></input><br></br>
+    <br></br>
+</form>
+<form action="/importFromTextField" method="post" enctype="multipart/form-data">
+    <h3>Manualne dodawanie cytatów</h3>
+    Wpisz cytat w poniższe pole: <br></br>
+    <input type="text" name="quote"></input>
+    <input type="submit" value="Dodaj"> </input> 
+</form>
+</body>
+</html>
+
+
+
