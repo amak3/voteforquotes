@@ -6,11 +6,20 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <body>
 <h1>Głosowanie - Wybierz najlepszy cytat</h1>
-<form action="/result" method="POST">
+<form action="/countVotes" method="POST">
 <div th:each="instance,iter : ${data}">
-     <input type="radio" name="quote" th:value="${instance.quote}" th:checked="(${iter.index} == 0)"/><span th:text="${instance.quote}"></span><br></br>
-</div>
-	<input type="submit" value="Zagłosuj"/>
+  <fieldset>
+    <span class="star-cb-group"> <span th:text="${instance.quote}"></span><br></br>
+      <input type="radio" th:id="${instance.quote} + 4" th:name="${instance.quote}" value="4" checked="checked" /><label th:for="${instance.quote} + 4">4</label>
+      <input type="radio" th:id="${instance.quote} + 3" th:name="${instance.quote}" value="3" /><label th:for="${instance.quote} + 3">3</label>
+      <input type="radio" th:id="${instance.quote} + 2" th:name="${instance.quote}" value="2" /><label th:for="${instance.quote} + 2">2</label>
+      <input type="radio" th:id="${instance.quote} + 1" th:name="${instance.quote}" value="1" /><label th:for="${instance.quote} + 1">1</label>
+      <input type="radio" th:id="${instance.quote} + 0" th:name="${instance.quote}" value="0" class="star-cb-clear" /><label th:for="${instance.quote} + 0">0</label>
+    </span>
+  </fieldset>
+ </div>
+ <input type="submit" value="Zagłosuj"/>
 </form>
 </body>
 </html>
+

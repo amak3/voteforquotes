@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.voteforquotes.repository.FormRepository;
@@ -38,7 +40,7 @@ public class RestApiController {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input));
 		
 		String quote;
-		while((quote = bufferedReader.readLine()) != quote) {
+		while((quote = bufferedReader.readLine()) != null) {
 			form.createForm(quote, 0);
 		}
 		
@@ -64,12 +66,14 @@ public class RestApiController {
 	
 	@RequestMapping(path = "/countVotes", method = RequestMethod.POST)
 	public String countVotes(Model model,
-								@RequestParam(value="quote", required=true) String choice) {
-		
-		int counter = form.obtainVotes(choice);
-		counter += 1;
-		form.updateForm(choice, counter);
-		
+							@RequestParam Map<String,String> allRequestParams) {
+		for (Map.Entry<String, String> entry : allRequestParams.entrySet()){
+			String quote = entry.getKey();
+			int votes = form.obtainVotes(quote);
+			int votesFromForm = Integer.parseInt(entry.getValue());
+			votes += votesFromForm;
+			form.updateForm(quote, votes);	
+		}
 		return "redirect:/result";
 	}
 	
@@ -78,5 +82,4 @@ public class RestApiController {
 		model.addAttribute("data", form.obtainData());
 		return "result";
 	}
-	
 }
