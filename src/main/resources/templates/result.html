@@ -15,6 +15,17 @@
      <td th:text="${instance.quote}"></td>
      <td th:text="${instance.votes}"></td>
 </tr>
-</table>	
+</table>
+<p></p>
+<form method="get" action="/addQuote">
+	<p align="center">
+    <button type="submit">Dodaj nowe cytaty</button>
+    </p>
+</form>	
+<form method="get" action="/form">
+    <p align="center">
+    <button type="submit">Oceń nowe cytaty</button>
+    </p>
+</form>	
 </body>
 </html>

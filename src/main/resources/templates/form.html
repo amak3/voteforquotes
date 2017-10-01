@@ -5,7 +5,7 @@
 </head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <body>
-<h1>Głosowanie - Wybierz najlepszy cytat</h1>
+<h1>Głosowanie - Oceń cytaty</h1>
 <form action="/countVotes" method="POST">
 <div th:each="instance,iter : ${data}">
   <fieldset>
@@ -20,6 +20,11 @@
  </div>
  <input type="submit" value="Zagłosuj"/>
 </form>
+<form method="get" action="/result">
+    <p align="center">
+    <button type="submit">Wynik</button>
+    </p>
+</form>	
 </body>
 </html>
 
