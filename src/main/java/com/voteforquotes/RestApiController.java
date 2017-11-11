@@ -14,10 +14,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.voteforquotes.SortEnum;
 import com.voteforquotes.repository.FormRepository;
+
+
 
 
 @Controller
@@ -25,12 +27,13 @@ public class RestApiController {
 	
 	@Autowired
 	private FormRepository form;
-	
+		
 	@RequestMapping(path = "/addQuote", method = RequestMethod.GET)
 	public String upload(Model model)
 	{
 		return "addQuote";
 	}
+	
 	
 	@RequestMapping(path = "/importFromFile", method = RequestMethod.POST)
 	public String importFromFile(Model model,
@@ -59,14 +62,23 @@ public class RestApiController {
     }
 	
 	@RequestMapping(path = "/form", method = RequestMethod.GET)
-	public String displayForm(Model model){
-		model.addAttribute("data", form.obtainData());
+	public String displayForm(Model model,
+							@RequestParam(name = "page", required = false, defaultValue = "1") int page,
+							@RequestParam(name = "orderBy", required = false, defaultValue = "date") String orderBy,
+							@RequestParam(name = "sort", required = false, defaultValue = "DESC") SortEnum sort){
+
+		model.addAttribute("page", page);
+		model.addAttribute("sort", sort);
+		model.addAttribute("orderBy", orderBy);
+		model.addAttribute("data", form.obtainDataOrderBy(sort, orderBy, page));
+		model.addAttribute("numberOfPages", form.obtainNumberOfPages());
 		return "form";
 	}
 	
 	@RequestMapping(path = "/countVotes", method = RequestMethod.POST)
 	public String countVotes(Model model,
 							@RequestParam Map<String,String> allRequestParams) {
+		
 		for (Map.Entry<String, String> entry : allRequestParams.entrySet()){
 			String quote = entry.getKey();
 			int votes = form.obtainVotes(quote);
@@ -77,9 +89,20 @@ public class RestApiController {
 		return "redirect:/result";
 	}
 	
+
 	@RequestMapping(path = "/result", method = RequestMethod.GET)
-	public String displayResult(Model model) {
-		model.addAttribute("data", form.obtainData());
+	public String displayResult(Model model,
+								@RequestParam(name = "page", required = false, defaultValue = "1") int page,
+								@RequestParam(name = "orderBy", required = false, defaultValue = "date") String orderBy,
+								@RequestParam(name = "sort", required = false, defaultValue = "DESC") SortEnum sort){
+
+		model.addAttribute("page", page);
+		model.addAttribute("sort", sort);
+		model.addAttribute("orderBy", orderBy);
+		model.addAttribute("data", form.obtainDataOrderBy(sort, orderBy, page));
+	
+		model.addAttribute("numberOfPages", form.obtainNumberOfPages());		
+	 
 		return "result";
 	}
 }

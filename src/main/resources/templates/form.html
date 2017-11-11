@@ -25,6 +25,14 @@
     <button type="submit">Wynik</button>
     </p>
 </form>	
+<div class="pagination" >
+	<a th:if="${page != 1}" th:href="@{/form?sort=} + ${sort} +  @{&amp;orderBy=} + ${orderBy}  +  @{&amp;page=} + ${page-1}">&laquo;</a>
+	<span th:each="i : ${#numbers.sequence(1, numberOfPages)}">
+	<a th:text="${i}" th:href="@{/form?sort=} + ${sort} +  @{&amp;orderBy=} + ${orderBy} +  @{&amp;page=} + ${i}"></a>
+	</span>
+	<a th:if="${page != numberOfPages}" th:href="@{/form?sort=} + ${sort} +  @{&amp;orderBy=} + ${orderBy} + @{&amp;page=} + ${page+1}">&raquo;</a>
+</div>
 </body>
 </html>
+
 

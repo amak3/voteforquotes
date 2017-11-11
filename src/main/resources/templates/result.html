@@ -6,6 +6,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <body>
 <h1>Wyniki głosowania</h1>
+Sortuj:<a href="/result?sort=DESC&amp;orderBy=votes&amp;page=1">Głosy malejąco</a><br></br>
+Sortuj:<a href="/result?sort=ASC&amp;orderBy=votes&amp;page=1">Głosy rosnąco</a><br></br>
+Sortuj:<a href="/result?sort=DESC&amp;orderBy=date&amp;page=1">Najnowsze</a><br></br>
+Sortuj:<a href="/result?sort=ASC&amp;orderBy=date&amp;page=1">Najstarsze</a>
 <table style="width:15%">
 <tr>
 <th>Cytat</th>
@@ -27,5 +31,12 @@
     <button type="submit">Oceń nowe cytaty</button>
     </p>
 </form>	
+<div class="pagination" >
+	<a th:if="${page != 1}" th:href="@{/result?sort=} + ${sort} +  @{&amp;orderBy=} + ${orderBy}  +  @{&amp;page=} + ${page-1}">&laquo;</a>
+	<span th:each="i : ${#numbers.sequence(1, numberOfPages)}">
+	<a th:text="${i}" th:href="@{/result?sort=} + ${sort} +  @{&amp;orderBy=} + ${orderBy} +  @{&amp;page=} + ${i}"></a>
+	</span>
+	<a th:if="${page != numberOfPages}" th:href="@{/result?sort=} + ${sort} +  @{&amp;orderBy=} + ${orderBy} + @{&amp;page=} + ${page+1}">&raquo;</a>
+</div>
 </body>
 </html>
