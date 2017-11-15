@@ -32,6 +32,23 @@ public class FormRepositoryDefault implements FormRepository{
 	public void createForm(String quote, int votes){
 		jdbcTemplate.update("INSERT INTO Form(quote, votes, date) VALUES (?, ?, ?)", quote, votes, Timestamp.valueOf(LocalDateTime.now()));
 	}
+	
+	@Override
+	public void createUser(String username, String password, String userrole){
+		jdbcTemplate.update("INSERT INTO User(username, password, userrole) VALUES (?, ?, ?)", username, password, userrole);
+	}
+	
+	@Override
+	public String obtainPassword(String username){
+		String password = jdbcTemplate.queryForObject("SELECT password from User where username = ?", new Object[] { username }, String.class);
+		return password;
+	}
+	
+	@Override
+	public String obtainUserRole(String username) {
+		String userRole = jdbcTemplate.queryForObject("SELECT userrole from User where username = ?", new Object[] { username }, String.class);
+		return userRole;
+	}
 
 	@Override
 	public List<FormDTO> obtainDataOrderBy(SortEnum sort, String orderBy, int page) { 
@@ -64,5 +81,7 @@ public class FormRepositoryDefault implements FormRepository{
 		int result = (int)countPages;
 		return result;
 	}
+
+
 
 }

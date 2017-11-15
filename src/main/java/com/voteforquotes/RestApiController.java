@@ -27,6 +27,9 @@ public class RestApiController {
 	
 	@Autowired
 	private FormRepository form;
+	
+	@Autowired 
+	private UserService userservice;
 		
 	@RequestMapping(path = "/addQuote", method = RequestMethod.GET)
 	public String upload(Model model)
@@ -104,5 +107,22 @@ public class RestApiController {
 		model.addAttribute("numberOfPages", form.obtainNumberOfPages());		
 	 
 		return "result";
+	}
+	
+	@RequestMapping(path = "/login", method = RequestMethod.GET)
+	public String displayLogin(){
+		return "login";
+	}
+	
+	@RequestMapping(path = "/register", method = RequestMethod.GET)
+	public String displayRegister(){
+		return "register";
+	}
+	
+	@RequestMapping(path = "/register", method = RequestMethod.POST)
+	public String register(@RequestParam(name = "username", required = true) String username,
+								@RequestParam(name = "password", required = true) String password){
+		userservice.createUser(username, password, "ROLE_USER");
+		return "login";
 	}
 }
