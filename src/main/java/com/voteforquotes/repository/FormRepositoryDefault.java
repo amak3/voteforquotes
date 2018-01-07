@@ -6,12 +6,14 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
+import com.voteforquotes.DatabaseException;
 import com.voteforquotes.SortEnum;
 
 @Component
@@ -25,12 +27,18 @@ public class FormRepositoryDefault implements FormRepository{
 		}
 	};
 	
+	
 	@Autowired
 	private JdbcTemplate jdbcTemplate; 
 	
 	@Override
-	public void createForm(String quote, int votes){
-		jdbcTemplate.update("INSERT INTO Form(quote, votes, date) VALUES (?, ?, ?)", quote, votes, Timestamp.valueOf(LocalDateTime.now()));
+	public void createForm(String quote) throws DatabaseException{
+		try {
+			jdbcTemplate.update("INSERT INTO Form(quote, date) VALUES (?, ?)", quote,
+					Timestamp.valueOf(LocalDateTime.now()));
+		} catch (RuntimeException e) {
+			throw new DatabaseException();
+		}
 	}
 	
 	@Override
@@ -51,10 +59,40 @@ public class FormRepositoryDefault implements FormRepository{
 	}
 
 	@Override
-	public List<FormDTO> obtainDataOrderBy(SortEnum sort, String orderBy, int page) { 
+	public List<Map<String, Object>> obtainDataForForm(int page, int userID) { 
 		int offset = (page - 1) * 10;
-		List<FormDTO> data = jdbcTemplate.query("SELECT quote, votes FROM form ORDER By " + orderBy + " "+ sort + " OFFSET ? FETCH NEXT 10 ROWS ONLY", FORM_MAPPER, offset);
+		List<Map<String, Object>> data = jdbcTemplate.queryForList("SELECT quote FROM Form "
+				+ "WHERE NOT EXISTS (SELECT * FROM Votes where Form.id = Votes.quoteID AND userID = ? )"
+				+ "ORDER BY date DESC "
+				+ "OFFSET ? FETCH NEXT 10 ROWS ONLY", userID, offset);
 		return data;
+	}
+	
+	@Override
+	public List<FormDTO> obtainDataForResult(SortEnum sort, String orderBy, int page) { 
+		int offset = (page - 1) * 10;
+		List<FormDTO> data = jdbcTemplate.query("SELECT Form.quote as quote, SUM(Votes.score) as votes, Form.date as date from Form "
+				+ "JOIN Votes ON Form.id = Votes.quoteID GROUP BY Form.quote, Form.date "
+				+ "ORDER BY " + orderBy + " " + sort
+				+ " OFFSET ? FETCH NEXT 10 ROWS ONLY", FORM_MAPPER, offset);
+		return data;
+	}
+	
+	@Override
+	public Integer obtainQuoteID(String quote) {
+		Integer quoteID = jdbcTemplate.queryForObject("SELECT id FROM Form WHERE quote = ?", new Object[] { quote }, Integer.class);
+		return quoteID;
+	}
+	
+	@Override
+	public void insertScore(int quoteID, int score, int userID) {
+		jdbcTemplate.update("INSERT INTO Votes(quoteID, score, userID) VALUES (?, ?, ?)", quoteID, score, userID);	
+	}
+	
+	@Override
+	public Integer obtainUserID(String username) {
+		Integer userID = jdbcTemplate.queryForObject("SELECT id FROM User WHERE username = ?", new Object[] { username }, Integer.class);
+		return userID;
 	}
 	
 
@@ -69,8 +107,8 @@ public class FormRepositoryDefault implements FormRepository{
 		jdbcTemplate.update("UPDATE Form SET votes = ? WHERE quote = ?", votes, quote);	
 	}
 	
-	public int obtainNumberOfPages() {
-		float countPages = jdbcTemplate.queryForObject("SELECT count(*) FROM form",  Integer.class);
+	public int obtainNumberOfPagesForResult() {
+		float countPages = jdbcTemplate.queryForObject("SELECT count(*) FROM Form",  Integer.class);
 		float checkRest = countPages % 10;
 		if (checkRest != 0) {
 			countPages = countPages/10 + 1;
@@ -82,6 +120,19 @@ public class FormRepositoryDefault implements FormRepository{
 		return result;
 	}
 
+	public int obtainNumberOfPagesForForm(int userID) {
+		float countPages = jdbcTemplate.queryForObject("SELECT count(quote) FROM Form "
+				+ "WHERE NOT EXISTS (SELECT * FROM Votes where Form.id = Votes.quoteID AND userID = ? )", new Object[] { userID }, Integer.class);
+		float checkRest = countPages % 10;
+		if (checkRest != 0) {
+			countPages = countPages/10 + 1;
+		}
+		else {
+			countPages = countPages/10;
+		}
+		int result = (int)countPages;
+		return result;
+	}
 
 
 }

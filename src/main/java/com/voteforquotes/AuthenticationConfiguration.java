@@ -1,4 +1,4 @@
-package com.voteforquotes;
+	package com.voteforquotes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,10 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AuthenticationConfiguration extends WebSecurityConfigurerAdapter  {
 	
 	@Autowired
+	private UserService userservice; 
+	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 		provider.setPasswordEncoder(passwordEncoder());
-		provider.setUserDetailsService(new UserService());
+		provider.setUserDetailsService(userservice);
 		auth.authenticationProvider(provider);
 	}
 	
@@ -42,6 +44,8 @@ public class AuthenticationConfiguration extends WebSecurityConfigurerAdapter  {
 //		.and().authorizeRequests().antMatchers("/login").anonymous()
 		
 		http.formLogin().loginPage("/login").permitAll();
+		http.logout().logoutUrl("/logout");                                                                                        
+
 		
 		http.csrf().disable();
 	}

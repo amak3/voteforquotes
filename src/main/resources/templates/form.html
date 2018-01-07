@@ -5,32 +5,39 @@
 </head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <body>
+<a href="/logout">Logout</a>
 <h1>Głosowanie - Oceń cytaty</h1>
 <form action="/countVotes" method="POST">
 <div th:each="instance,iter : ${data}">
   <fieldset>
     <span class="star-cb-group"> <span th:text="${instance.quote}"></span><br></br>
-      <input type="radio" th:id="${instance.quote} + 4" th:name="${instance.quote}" value="4" checked="checked" /><label th:for="${instance.quote} + 4">4</label>
-      <input type="radio" th:id="${instance.quote} + 3" th:name="${instance.quote}" value="3" /><label th:for="${instance.quote} + 3">3</label>
-      <input type="radio" th:id="${instance.quote} + 2" th:name="${instance.quote}" value="2" /><label th:for="${instance.quote} + 2">2</label>
+      <input type="radio" th:id="${instance.quote} + -1" th:name="${instance.quote}" value="-1" checked="checked" /><label th:for="${instance.quote} + -1">Nie wiem</label>
+      <input type="radio" th:id="${instance.quote} + 0" th:name="${instance.quote}" value="0" /><label th:for="${instance.quote} + 0">0</label>
       <input type="radio" th:id="${instance.quote} + 1" th:name="${instance.quote}" value="1" /><label th:for="${instance.quote} + 1">1</label>
-      <input type="radio" th:id="${instance.quote} + 0" th:name="${instance.quote}" value="0" class="star-cb-clear" /><label th:for="${instance.quote} + 0">0</label>
+      <input type="radio" th:id="${instance.quote} + 2" th:name="${instance.quote}" value="2" /><label th:for="${instance.quote} + 2">2</label>
+      <input type="radio" th:id="${instance.quote} + 3" th:name="${instance.quote}" value="3" /><label th:for="${instance.quote} + 3">3</label>
+      <input type="radio" th:id="${instance.quote} + 4" th:name="${instance.quote}" value="4" class="star-cb-clear" /><label th:for="${instance.quote} + 4">4</label>
     </span>
   </fieldset>
  </div>
  <input type="submit" value="Zagłosuj"/>
 </form>
+<form method="get" action="/addQuote">
+	<p align="center">
+    <button type="submit">Dodaj nowe cytaty</button>
+    </p>
+</form>	
 <form method="get" action="/result">
     <p align="center">
     <button type="submit">Wynik</button>
     </p>
 </form>	
-<div class="pagination" >
-	<a th:if="${page != 1}" th:href="@{/form?sort=} + ${sort} +  @{&amp;orderBy=} + ${orderBy}  +  @{&amp;page=} + ${page-1}">&laquo;</a>
-	<span th:each="i : ${#numbers.sequence(1, numberOfPages)}">
-	<a th:text="${i}" th:href="@{/form?sort=} + ${sort} +  @{&amp;orderBy=} + ${orderBy} +  @{&amp;page=} + ${i}"></a>
+<div th:if="${numberOfPages != 0}"  class="pagination" >
+	<a th:if="${page != 1}" th:href="@{/form?page=} + ${page-1}">&laquo;</a>
+	<span  th:each="i : ${#numbers.sequence(1, numberOfPages)}">
+	<a th:text="${i}" th:href="@{/form?page=} + ${i}"></a>
 	</span>
-	<a th:if="${page != numberOfPages}" th:href="@{/form?sort=} + ${sort} +  @{&amp;orderBy=} + ${orderBy} + @{&amp;page=} + ${page+1}">&raquo;</a>
+	<a th:if="${page != numberOfPages}" th:href="@{/form?page=} + ${page+1}">&raquo;</a>
 </div>
 </body>
 </html>
